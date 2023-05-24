@@ -1,5 +1,6 @@
 //2d array t store spot info
 
+//forcing file name change
 const cols = 100;
 const rows = 100;
 const grid = new Array(cols);
