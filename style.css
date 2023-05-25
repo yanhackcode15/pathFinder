@@ -5,4 +5,24 @@ html, body {
   canvas {
     display: block;
   }
+
+  .nav_bar {
+    display: flex;
+    direction: row;
+    padding: 10px;
+  }
+
+  .start_button {
+    background-color: #E6D7FF;
+    margin: 20px;
+    padding: 10px;
+    width: 100px;
+  }
+
+  .pause_button {
+    background-color: #f7a400;
+    margin: 20px;
+    padding: 10px;
+    width: 100px;
+  }
   

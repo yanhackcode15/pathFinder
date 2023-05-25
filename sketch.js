@@ -10,12 +10,6 @@ let start;
 let end;
 let w, h;
 let path = [];
-let counter = 0;
-
-// function removeFromArray(arr, ele) {
-//   let i = arr.indexOf(ele);
-//   arr.splice(i, 1);
-// }
 
 function estimateCost(a, b) {
   const d = dist(a.i, a.j, b.i, b.j);
@@ -116,17 +110,16 @@ class Spot {
 //   };
 // }
 
-function setup() {
-  createCanvas(400, 400);
-  w = width / cols;
-  h = height / rows;
+function resetSketch() {
+  openSet.length = 0;
+  closedSet.length = 0;
+  path.length = 0;
   for (let i = 0; i < cols; i++) {
     grid[i] = new Array(rows);
     for (let j = 0; j < rows; j++) {
       grid[i][j] = new Spot(i, j);
     }
   }
-
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       grid[i][j].addNeighbors(grid);
@@ -136,15 +129,31 @@ function setup() {
   end = grid[cols - 1][rows - 1];
   openSet.push(start);
 }
+function setup() {
+  let canvas = createCanvas(400, 400);
+  canvas.parent("main")
+  // canvas.position(0, 50, 'relative')
+  w = width / cols;
+  h = height / rows;
+  resetSketch();
+  const button = createButton('Reset Game');
+  button.parent('main')
+  button.mousePressed(resetSketch);
+  button.style('background-color', 'white');
+  button.style('padding', '10px');
+  button.style('width', '100px');
+  button.position(0, 0, 'relative');
+}
 
 function draw() {
   if (mouseIsPressed) {
     let iClicked = Math.floor(mouseX/w);
     let jClicked = Math.floor(mouseY/h);
-    let spotClicked = grid[iClicked][jClicked];
-    spotClicked.setWall();
+    if(iClicked<cols && jClicked<rows){
+      let spotClicked = grid[iClicked][jClicked];
+      spotClicked.setWall();
+    }
   }
-
   if (path[path.length] === end) {
     // Best path has already been found
     noLoop();
@@ -172,8 +181,6 @@ function draw() {
     const brightness = Math.floor((i / path.length) * 127);
     step.show(color(brightness, brightness, 255 - brightness));
   });
-
-  counter++;
 }
 
 function findPath() {
