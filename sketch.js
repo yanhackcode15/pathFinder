@@ -44,7 +44,7 @@ class Spot {
       fill(0);
     }
     stroke(0);
-    rect(this.i * w, this.j * h, w - 1, h - 1);
+    rect(this.i * w, this.j * h+50, w - 1, h - 1);
   }
 
   addNeighbors(grid) {
@@ -131,13 +131,13 @@ function resetSketch() {
 }
 function setup() {
   let canvas = createCanvas(400, 400);
-  canvas.parent("main")
-  // canvas.position(0, 50, 'relative')
+  // canvas.parent("main")
+  // canvas.position(0, 50)
   w = width / cols;
   h = height / rows;
   resetSketch();
   const button = createButton('Reset Game');
-  button.parent('main')
+  // button.parent('main')
   button.mousePressed(resetSketch);
   button.style('background-color', 'white');
   button.style('padding', '10px');
@@ -148,8 +148,8 @@ function setup() {
 function draw() {
   if (mouseIsPressed) {
     let iClicked = Math.floor(mouseX/w);
-    let jClicked = Math.floor(mouseY/h);
-    if(iClicked<cols && jClicked<rows){
+    let jClicked = Math.floor((mouseY-50)/h);
+    if(iClicked<cols && jClicked<rows && iClicked>0 && jClicked>0){
       let spotClicked = grid[iClicked][jClicked];
       spotClicked.setWall();
     }
