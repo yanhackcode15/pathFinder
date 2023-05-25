@@ -1,8 +1,8 @@
 //2d array t store spot info
 
-//forcing file name change
-const cols = 100;
-const rows = 100;
+//forcing file name
+const cols = 50;
+const rows = 50;
 const grid = new Array(cols);
 const openSet = [];
 const closedSet = [];
@@ -10,11 +10,12 @@ let start;
 let end;
 let w, h;
 let path = [];
+let counter = 0;
 
-function removeFromArray(arr, ele) {
-  let i = arr.indexOf(ele);
-  arr.splice(i, 1);
-}
+// function removeFromArray(arr, ele) {
+//   let i = arr.indexOf(ele);
+//   arr.splice(i, 1);
+// }
 
 function estimateCost(a, b) {
   const d = dist(a.i, a.j, b.i, b.j);
@@ -65,7 +66,15 @@ class Spot {
     if (this.j > 0) {
       this.neighbors.push(grid[this.i][this.j - 1]);
     }
-  };
+  }
+
+  toggle(){
+    this.wall = !this.wall;
+  }
+
+  setWall(){
+    this.wall = true;
+  }
 }
 
 // function Spot(i, j) {
@@ -129,6 +138,13 @@ function setup() {
 }
 
 function draw() {
+  if (mouseIsPressed) {
+    let iClicked = Math.floor(mouseX/w);
+    let jClicked = Math.floor(mouseY/h);
+    let spotClicked = grid[iClicked][jClicked];
+    spotClicked.setWall();
+  }
+
   if (path[path.length] === end) {
     // Best path has already been found
     noLoop();
@@ -140,7 +156,7 @@ function draw() {
       grid[i][j].show(color(255));
     }
   }
-
+  
   // color red the steps we have evaluated
   for (let i = 0; i < closedSet.length; i++) {
     closedSet[i].show(color(255, 0, 0));
@@ -156,6 +172,8 @@ function draw() {
     const brightness = Math.floor((i / path.length) * 127);
     step.show(color(brightness, brightness, 255 - brightness));
   });
+
+  counter++;
 }
 
 function findPath() {
