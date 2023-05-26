@@ -114,7 +114,18 @@ function resumeSketch(){
 
 function setup() {
   frameRate(10)
+  const title = createElement("h1","Click on tiles to make them walls");
+  title.style('display', 'block');
+  title.style("text-align","center");
+  title.style("font-kerning","16px")
+
+  const gameControls= createDiv()
+  gameControls.id('game_controls');
+  gameControls.style('display', 'flex');
+  gameControls.style('justify-content', 'center');
+
   const resetButton = createButton('Restart');
+  resetButton.parent('game_controls');
   resetButton.mousePressed(resetSketch);
   resetButton.style('background-color', 'white');
   resetButton.style('padding', '10px');
@@ -122,6 +133,7 @@ function setup() {
   resetButton.style('width', '100px');
 
   const stopButton = createButton('Stop');
+  stopButton.parent('game_controls');
   stopButton.mousePressed(stopSketch);
   stopButton.style('background-color', 'white');
   stopButton.style('padding', '10px');
@@ -129,12 +141,15 @@ function setup() {
   stopButton.style('width', '100px');
 
   const pauseButton = createButton('Pause');
+  pauseButton.parent('game_controls');
   pauseButton.mousePressed(pauseSketch);
   pauseButton.style('background-color', 'white');
   pauseButton.style('padding', '10px');
   pauseButton.style('margin', '10px');
   pauseButton.style('width', '100px');
+
   const resumeButton = createButton('Resume');
+  resumeButton.parent('game_controls');
   resumeButton.mousePressed(resumeSketch);
   resumeButton.style('background-color', 'white');
   resumeButton.style('padding', '10px');
@@ -143,6 +158,9 @@ function setup() {
 
   let canvas = createCanvas(400, 400);
   canvas.style('margin', '10px 50px 10px 50px');
+  canvas.style('display', 'block')
+  canvas.style('margin', 'auto')
+
 
   w = width / cols;
   h = height / rows;
