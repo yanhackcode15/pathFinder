@@ -10,6 +10,7 @@ let start;
 let end;
 let w, h;
 let path = [];
+let running = true;
 
 function estimateCost(a, b) {
   const d = dist(a.i, a.j, b.i, b.j);
@@ -44,7 +45,7 @@ class Spot {
       fill(0);
     }
     stroke(0);
-    rect(this.i * w, this.j * h+50, w - 1, h - 1);
+    rect(this.i * w, this.j * h, w - 1, h - 1);
   }
 
   addNeighbors(grid) {
@@ -69,48 +70,23 @@ class Spot {
   setWall(){
     this.wall = true;
   }
+  removeWall() {
+    this.wall = false;
+  }
 }
-
-// function Spot(i, j) {
-//   this.i = i;
-//   this.j = j;
-//   this.f = 0;
-//   this.g = 0;
-//   this.h = 0;
-//   this.neighbors = [];
-//   this.previous = undefined;
-//   this.wall = false;
-
-//   if (random(1) < 0.3 && i > 0 && j > 0 && i < cols - 1 && j < rows - 1) {
-//     this.wall = true;
-//   }
-
-//   this.show = function (col) {
-//     fill(col);
-//     if (this.wall) {
-//       fill(0);
-//     }
-//     stroke(0);
-//     rect(this.i * w, this.j * h, w - 1, h - 1);
-//   };
-
-//   this.addNeighbors = function (grid) {
-//     if (i < cols - 1) {
-//       this.neighbors.push(grid[i + 1][j]);
-//     }
-//     if (j < rows - 1) {
-//       this.neighbors.push(grid[i][j + 1]);
-//     }
-//     if (i > 0) {
-//       this.neighbors.push(grid[i - 1][j]);
-//     }
-//     if (j > 0) {
-//       this.neighbors.push(grid[i][j - 1]);
-//     }
-//   };
-// }
-
+function stopSketch(){
+  openSet.length = 0;
+  closedSet.length = 0;
+  path.length = 0;
+  for (let i = 0; i < cols; i++) {
+    // grid[i] = new Array(rows);
+    for (let j = 0; j < rows; j++) {
+      grid[i][j].removeWall()
+    }
+  }
+}
 function resetSketch() {
+  
   openSet.length = 0;
   closedSet.length = 0;
   path.length = 0;
@@ -129,58 +105,89 @@ function resetSketch() {
   end = grid[cols - 1][rows - 1];
   openSet.push(start);
 }
+function pauseSketch() {
+  running = false;
+}
+function resumeSketch(){
+  running = true;
+}
+
 function setup() {
+  frameRate(10)
+  const resetButton = createButton('Restart');
+  resetButton.mousePressed(resetSketch);
+  resetButton.style('background-color', 'white');
+  resetButton.style('padding', '10px');
+  resetButton.style('margin', '10px');
+  resetButton.style('width', '100px');
+
+  const stopButton = createButton('Stop');
+  stopButton.mousePressed(stopSketch);
+  stopButton.style('background-color', 'white');
+  stopButton.style('padding', '10px');
+  stopButton.style('margin', '10px');
+  stopButton.style('width', '100px');
+
+  const pauseButton = createButton('Pause');
+  pauseButton.mousePressed(pauseSketch);
+  pauseButton.style('background-color', 'white');
+  pauseButton.style('padding', '10px');
+  pauseButton.style('margin', '10px');
+  pauseButton.style('width', '100px');
+  const resumeButton = createButton('Resume');
+  resumeButton.mousePressed(resumeSketch);
+  resumeButton.style('background-color', 'white');
+  resumeButton.style('padding', '10px');
+  resumeButton.style('margin', '10px');
+  resumeButton.style('width', '100px');
+
   let canvas = createCanvas(400, 400);
-  // canvas.parent("main")
-  // canvas.position(0, 50)
+  canvas.style('margin', '10px 50px 10px 50px');
+
   w = width / cols;
   h = height / rows;
   resetSketch();
-  const button = createButton('Reset Game');
-  // button.parent('main')
-  button.mousePressed(resetSketch);
-  button.style('background-color', 'white');
-  button.style('padding', '10px');
-  button.style('width', '100px');
-  button.position(0, 0, 'relative');
+
 }
 
 function draw() {
-  if (mouseIsPressed) {
-    let iClicked = Math.floor(mouseX/w);
-    let jClicked = Math.floor((mouseY-50)/h);
-    if(iClicked<cols && jClicked<rows && iClicked>0 && jClicked>0){
-      let spotClicked = grid[iClicked][jClicked];
-      spotClicked.setWall();
+  if(running){
+    if (mouseIsPressed) {
+      let iClicked = Math.floor(mouseX/w);
+      let jClicked = Math.floor((mouseY)/h);
+      if(iClicked<cols && jClicked<rows && iClicked>0 && jClicked>0){
+        let spotClicked = grid[iClicked][jClicked];
+        spotClicked.setWall();
+      }
     }
-  }
-  if (path[path.length] === end) {
-    // Best path has already been found
-    noLoop();
-  }
-  findPath();
-  background(255);
-  for (let i = 0; i < cols; i++) {
-    for (let j = 0; j < rows; j++) {
-      grid[i][j].show(color(255));
+    if (path[path.length] === end) {
+      // Best path has already been found
+      noLoop();
     }
-  }
-  
-  // color red the steps we have evaluated
-  for (let i = 0; i < closedSet.length; i++) {
-    closedSet[i].show(color(255, 0, 0));
-  }
+    findPath();
+    background(255);
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        grid[i][j].show(color(255));
+      }
+    }
+    
+    // color red the steps we have evaluated
+    for (let i = 0; i < closedSet.length; i++) {
+      closedSet[i].show(color(255, 0, 0));
+    }
 
-  // color green the steps that we haven't explored yet
-  for (let i = 0; i < openSet.length; i++) {
-    openSet[i].show(color(0, 255, 0));
-  }
+    // color green the steps that we haven't explored yet
+    for (let i = 0; i < openSet.length; i++) {
+      openSet[i].show(color(0, 255, 0));
+    }
 
-  // Draw the best path
-  path.forEach((step, i) => {
-    const brightness = Math.floor((i / path.length) * 127);
-    step.show(color(brightness, brightness, 255 - brightness));
-  });
+    // Draw the best path
+    path.forEach((step, i) => {
+      const brightness = Math.floor((i / path.length) * 127);
+      step.show(color(brightness, brightness, 255 - brightness));
+    });
+  }
 }
 
 function findPath() {
